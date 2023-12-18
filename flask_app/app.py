@@ -91,8 +91,10 @@ def get_data_from_mvideo():
         json=json_data,
     )
 
-    for i in list_response.json().get("body").get("products"):
-        fin_list.update({str(i["productId"]): [i["name"]]})
+    fin_list = {
+        str(i["productId"]): [i["name"]]
+        for i in list_response.json().get("body").get("products")
+    }
 
     id_list_to_str = ",".join(
         str(i) for i in listing_response.json()["body"]["products"]
@@ -111,8 +113,10 @@ def get_data_from_mvideo():
         headers=headers,
     )
 
-    for i in prices_response.json().get("body").get("materialPrices"):
-        fin_list[i["productId"]].append(i["price"]["salePrice"])
+    fin_list = {
+        i["productId"]: fin_list[i["productId"]] + [i["price"]["salePrice"]]
+        for i in prices_response.json().get("body").get("materialPrices")
+    }
 
     collection.delete_many(fin_list)
     collection.insert_one(fin_list)
